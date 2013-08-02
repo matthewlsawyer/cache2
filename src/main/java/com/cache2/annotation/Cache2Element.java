@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import com.cache2.domain.Identifiable;
 
 /**
- * Annotation the declares a type, field, or method parameter to be
+ * Annotation that declares a type, field, or method parameter to be
  * handled by cache2.
  * 
  * @author matthew
