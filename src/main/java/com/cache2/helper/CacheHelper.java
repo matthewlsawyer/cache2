@@ -28,6 +28,10 @@ public abstract class CacheHelper<K, V> {
 		return this.getCache().put(key, value);
 	}
 
+	public V remove(K key) {
+		return this.getCache().remove(key);
+	}
+
 	protected abstract String getCacheName();
 
 	public void clearCache() {

@@ -55,14 +55,17 @@ import com.cache2.util.CacheUtil;
  * </p>
  * 
  * <p>
- * TODO support the following situations:
+ * Support the following situations:
  * <ol>
  * <li>1. A method gets cached and changes to the returned object invalidate it.
- * </li>
+ * This is handled by invalidations on update or delete to the returned object,
+ * as we create a cache2 relating that element back to the method.</li>
  * <li>2. A method gets cached and the returned entity contains a list of child
  * entities. If that list is added to or removed from we invalidate the method
- * cache. Basically the child entities need to invalidate methods linked to the
- * parent entity.
+ * cache. Basically the child elements need to invalidate methods linked to the
+ * parent element. This is handled by invalidations on the child element update
+ * or delete, as they normally contain a field of the parent element or its id.
+ * As long as that field in annotated, it will find the method to invalidate.
  * <li>
  * </ol>
  * </p>
@@ -146,7 +149,7 @@ public class Cache2Intercepter {
 		// return type of method
 		final Class<?> returnType = method.getReturnType();
 
-		final CacheCommand command = new CacheCommand() {
+		final CacheCommand create = new CacheCommand() {
 
 			@Override
 			public void execute(Cache2Key cache2Key, Cache1Key cache1Key) {
@@ -178,10 +181,10 @@ public class Cache2Intercepter {
 				cache1Helper.put(cache1Key, cachedValue);
 
 				// create links in cache2 for return value
-				this.handleFields(cachedValue.getValue(), cache1Key, command);
+				this.handleFields(cachedValue.getValue(), cache1Key, create);
 
 				// create links in cache2 for arguments
-				this.handleArguments(pjp.getArgs(), cache1Key, command);
+				this.handleArguments(pjp.getArgs(), cache1Key, create);
 			}
 
 		}
@@ -207,10 +210,10 @@ public class Cache2Intercepter {
 				cache1Helper.put(cache1Key, cachedValue);
 
 				// create links in cache2
-				this.handleFields(cachedValue.getValue(), cache1Key, command);
+				this.handleFields(cachedValue.getValue(), cache1Key, create);
 
 				// create links in cache2 for arguments
-				this.handleArguments(pjp.getArgs(), cache1Key, command);
+				this.handleArguments(pjp.getArgs(), cache1Key, create);
 			}
 		}
 		// if the return type is not an entity
@@ -221,9 +224,37 @@ public class Cache2Intercepter {
 		return retVal;
 	}
 
-	protected Object invalidate(ProceedingJoinPoint pjp) {
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * Handles the {@link CacheStrategy#INVALIDATE} strategy by intercepting a
+	 * method call and invalidating any cached methods linked to method argument
+	 * elements.
+	 * 
+	 * @param pjp
+	 * @return retVal
+	 * @throws Throwable
+	 */
+	protected Object invalidate(ProceedingJoinPoint pjp) throws Throwable {
+
+		final Object retVal = pjp.proceed();
+
+		CacheCommand invalidate = new CacheCommand() {
+
+			@Override
+			public void execute(Cache2Key cache2Key, Cache1Key cache1Key) {
+
+				// get cache1 key from cache2
+				cache1Key = cache2Helper.get(cache2Key);
+
+				// remove the cache1
+				cache1Helper.remove(cache1Key);
+			}
+
+		};
+
+		// handle the arguments with the command
+		this.handleArguments(pjp.getArgs(), null, invalidate);
+
+		return retVal;
 	}
 
 	/**
