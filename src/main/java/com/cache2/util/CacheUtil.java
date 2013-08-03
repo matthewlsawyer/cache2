@@ -1,5 +1,8 @@
 package com.cache2.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.security.MessageDigest;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -61,10 +64,29 @@ public class CacheUtil {
 	 * @param types
 	 * @param args
 	 * @return cache1 key
+	 * @throws Exception
 	 */
 	public static Cache1Key createCache1Key(Class<?> declaringClass,
-			String methodName, Class<?>[] types, Object[] args) {
-		return new Cache1Key(declaringClass, methodName, types, args.hashCode());
+			String methodName, Class<?>[] types, Object[] args)
+			throws Exception {
+
+		Cache1Key cache1Key = null;
+
+		final ByteArrayOutputStream b = new ByteArrayOutputStream();
+
+		new ObjectOutputStream(b).writeObject(args);
+
+		byte[] data = b.toByteArray();
+
+		final MessageDigest digest = java.security.MessageDigest
+				.getInstance("MD5");
+
+		digest.update(data);
+
+		cache1Key = new Cache1Key(declaringClass, methodName, types,
+				digest.digest());
+
+		return cache1Key;
 	}
 
 	/**

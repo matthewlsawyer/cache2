@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.cache2.domain.Identifiable;
 
@@ -45,6 +46,11 @@ public class Cache2Key implements Serializable {
 		Cache2Key rhs = (Cache2Key) obj;
 		return new EqualsBuilder().append(clazz, rhs.getClazz())
 				.append(id, rhs.getId()).isEquals();
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 
 	/**

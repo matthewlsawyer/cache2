@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class Cache1Key implements Serializable {
 
@@ -18,10 +19,10 @@ public class Cache1Key implements Serializable {
 
 	private final Class<?>[] types;
 
-	private final int argHash;
+	private final byte[] argHash;
 
 	public Cache1Key(Class<?> declaringClass, String methodName,
-			Class<?>[] types, int argHash) {
+			Class<?>[] types, byte[] argHash) {
 		super();
 		this.declaringClass = declaringClass;
 		this.methodName = methodName;
@@ -55,6 +56,11 @@ public class Cache1Key implements Serializable {
 				.append(argHash, rhs.getArgHash()).isEquals();
 	}
 
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
+
 	/**
 	 * @return the declaringClass
 	 */
@@ -79,7 +85,7 @@ public class Cache1Key implements Serializable {
 	/**
 	 * @return the argHash
 	 */
-	public int getArgHash() {
+	public byte[] getArgHash() {
 		return argHash;
 	}
 
