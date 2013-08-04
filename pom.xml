@@ -8,8 +8,11 @@
 	<description>A declarative cache framework for Java</description>
 
 	<scm>
-		<developerConnection>scm:git:https://github.com/matthewlsawyer/cache2</developerConnection>
-  </scm>
+		<connection>scm:git:git@github.com:matthewlsawyer/cache2.git</connection>
+		<developerConnection>scm:git:git@github.com:matthewlsawyer/cache2.git</developerConnection>
+		<url>https://github.com/matthewlsawyer/cache2</url>
+	</scm>
+
 
 	<modules>
 		<module>cache2-dist</module>
