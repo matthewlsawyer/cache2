@@ -4,8 +4,14 @@
 	<groupId>com.cache2</groupId>
 	<artifactId>cache2</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 	<name>cache2</name>
 	<description>A declarative cache framework for Java</description>
+
+	<modules>
+		<module>cache2-dist</module>
+		<module>cache2-test</module>
+	</modules>
 
 	<build>
 		<plugins>
@@ -19,47 +25,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<dependencies>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>3.2.3.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aop</artifactId>
-			<version>3.2.3.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjtools</artifactId>
-			<version>1.7.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>3.2.3.RELEASE</version>
-			<scope>test</scope>
-		</dependency>
-
-	</dependencies>
 
 </project>
