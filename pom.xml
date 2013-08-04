@@ -8,6 +8,10 @@
 	<name>cache2</name>
 	<description>A declarative cache framework for Java</description>
 
+	<scm>
+		<url>https://github.com/matthewlsawyer/cache2</url>
+	</scm>
+
 	<modules>
 		<module>cache2-dist</module>
 		<module>cache2-test</module>
