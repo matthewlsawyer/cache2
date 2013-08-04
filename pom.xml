@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cache2</groupId>
 	<artifactId>cache2</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>cache2</name>
 	<description>A declarative cache framework for Java</description>
@@ -11,8 +11,7 @@
 		<connection>scm:git:git@github.com/matthewlsawyer/cache2.git</connection>
 		<developerConnection>scm:git:git@github.com/matthewlsawyer/cache2.git</developerConnection>
 		<url>https://github.com/matthewlsawyer/cache2</url>
-  	  <tag>cache2-1.0.0</tag>
-  </scm>
+  	</scm>
 
 
 	<modules>
