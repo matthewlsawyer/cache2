@@ -1,5 +1,7 @@
 package com.cache2.helper;
 
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +26,7 @@ public class TestCache2Helper {
 	@Test
 	public void testPutGetAndRemove() throws Exception {
 
-		Cache1Key cache1Key = CacheUtil.createCache1Key(this.getClass(),
+		final Cache1Key cache1Key = CacheUtil.createCache1Key(this.getClass(),
 				"testMethod", null, null);
 
 		cache1Helper.put(cache1Key, new CachedValue<Void>(null));
@@ -37,10 +39,13 @@ public class TestCache2Helper {
 
 		cache2Helper.put(cache2Key, cache1Key);
 
-		cache1Key = cache2Helper.get(cache2Key);
+		Set<Cache1Key> cache1Keys = cache2Helper.get(cache2Key);
 
-		Assert.assertNotNull(cache1Key);
-		Assert.assertNotNull(cache1Helper.get(cache1Key));
+		Assert.assertNotNull(cache1Keys);
+
+		for (Cache1Key key : cache1Keys) {
+			Assert.assertNotNull(cache1Helper.get(key));
+		}
 
 	}
 

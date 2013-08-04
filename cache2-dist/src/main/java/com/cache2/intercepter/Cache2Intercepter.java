@@ -1,8 +1,10 @@
 package com.cache2.intercepter;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -184,7 +186,8 @@ public class Cache2Intercepter {
 				this.handleFields(cachedValue.getValue(), cache1Key, create);
 
 				// create links in cache2 for arguments
-				this.handleArguments(pjp.getArgs(), cache1Key, create);
+				this.handleArguments(pjp.getArgs(),
+						method.getParameterAnnotations(), cache1Key, create);
 			}
 
 		}
@@ -213,7 +216,8 @@ public class Cache2Intercepter {
 				this.handleFields(cachedValue.getValue(), cache1Key, create);
 
 				// create links in cache2 for arguments
-				this.handleArguments(pjp.getArgs(), cache1Key, create);
+				this.handleArguments(pjp.getArgs(),
+						method.getParameterAnnotations(), cache1Key, create);
 			}
 		}
 		// if the return type is not an entity
@@ -235,24 +239,30 @@ public class Cache2Intercepter {
 	 */
 	protected Object invalidate(ProceedingJoinPoint pjp) throws Throwable {
 
+		final Method method = ((MethodSignature) pjp.getSignature())
+				.getMethod();
+
 		final Object retVal = pjp.proceed();
 
-		CacheCommand invalidate = new CacheCommand() {
+		final CacheCommand invalidate = new CacheCommand() {
 
 			@Override
 			public void execute(Cache2Key cache2Key, Cache1Key cache1Key) {
 
-				// get cache1 key from cache2
-				cache1Key = cache2Helper.get(cache2Key);
+				// get cache1 keys from cache2
+				Set<Cache1Key> keys = cache2Helper.get(cache2Key);
 
-				// remove the cache1
-				cache1Helper.remove(cache1Key);
+				for (Cache1Key key : keys) {
+					// remove the cache1
+					cache1Helper.remove(key);
+				}
 			}
 
 		};
 
 		// handle the arguments with the command
-		this.handleArguments(pjp.getArgs(), null, invalidate);
+		this.handleArguments(pjp.getArgs(), method.getParameterAnnotations(),
+				null, invalidate);
 
 		return retVal;
 	}
@@ -267,33 +277,46 @@ public class Cache2Intercepter {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	private void handleArguments(Object[] args, Cache1Key cache1Key,
-			CacheCommand command) throws Exception {
+	private void handleArguments(Object[] args, Annotation[][] annotations,
+			Cache1Key cache1Key, CacheCommand command) throws Exception {
 
 		if (args != null) {
-			for (Object arg : args) {
 
-				if (arg != null
-						&& arg.getClass().isAnnotationPresent(
-								Cache2Element.class)) {
+			for (int i = 0; i < args.length; i++) {
+
+				Cache2Element cache2Element = null;
+
+				if (args[i] != null) {
+
+					for (Annotation annotation : annotations[i]) {
+						if (annotation instanceof Cache2Element) {
+							cache2Element = (Cache2Element) annotation;
+							break;
+						}
+					}
+
+					if (cache2Element == null) {
+						continue;
+					}
 
 					// if its a list
-					if (List.class.isAssignableFrom(arg.getClass())) {
-						this.handleFields((List<Identifiable>) arg, cache1Key,
-								command);
+					if (List.class.isAssignableFrom(args[i].getClass())) {
+						this.handleFields((List<Identifiable>) args[i],
+								cache1Key, command);
 					}
 					// if its an integer
-					else if (int.class.isAssignableFrom(arg.getClass())) {
+					else if (int.class.isAssignableFrom(args[i].getClass())
+							|| Integer.class.isAssignableFrom(args[i]
+									.getClass())) {
 
-						command.execute(
-								CacheUtil.createCache2Key(arg.getClass()
-										.getAnnotation(Cache2Element.class)
-										.value(), (int) arg), cache1Key);
+						command.execute(CacheUtil.createCache2Key(
+								cache2Element.value(), (int) args[i]),
+								cache1Key);
 					}
 					// if its a normal element
-					else if (Identifiable.class
-							.isAssignableFrom(arg.getClass())) {
-						this.handleFields((Identifiable) arg, cache1Key,
+					else if (Identifiable.class.isAssignableFrom(args[i]
+							.getClass())) {
+						this.handleFields((Identifiable) args[i], cache1Key,
 								command);
 					}
 				}
@@ -348,9 +371,10 @@ public class Cache2Intercepter {
 			if (fields != null) {
 				for (Field field : fields) {
 
+					field.setAccessible(true);
+
 					// if the field is annotated
-					if (field.getType()
-							.isAnnotationPresent(Cache2Element.class)) {
+					if (field.isAnnotationPresent(Cache2Element.class)) {
 
 						// if its a list
 						if (List.class.isAssignableFrom(field.getType())) {
@@ -359,17 +383,20 @@ public class Cache2Intercepter {
 									cache1Key, command);
 						}
 						// if its an integer
-						else if (int.class.isAssignableFrom(field.getType())) {
+						else if (int.class.isAssignableFrom(field.getType())
+								|| Integer.class.isAssignableFrom(field
+										.getType())) {
 
 							// execute the command
 							command.execute(
-									CacheUtil.createCache2Key(field.getType()
+									CacheUtil.createCache2Key(field
 											.getAnnotation(Cache2Element.class)
 											.value(), (int) field.get(element)),
 									cache1Key);
 						}
 						// if its a normal element
-						else {
+						else if (Identifiable.class.isAssignableFrom(field
+								.getType())) {
 							this.handleFields((Identifiable) field.get(field),
 									cache1Key, command);
 						}

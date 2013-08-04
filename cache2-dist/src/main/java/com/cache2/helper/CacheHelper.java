@@ -9,7 +9,7 @@ public abstract class CacheHelper<K, V> {
 	private ConcurrentMap<K, V> cache;
 
 	@SuppressWarnings("unchecked")
-	public ConcurrentMap<K, V> getCache() {
+	public synchronized ConcurrentMap<K, V> getCache() {
 
 		// lazy load cache
 		if (this.cache == null) {
