@@ -16,5 +16,5 @@ This framework is dependent on Spring and can be enabled quickly by component sc
 TODO
 ======
 
-1. Allow another cache implementation to be used (right now it uses a simple ConcurrentHashMap).
-2. Remove dependency to Spring; externalize logic of the interceptor and write a Proxy that can be used as well
+1. Allow another cache implementation to be used (right now it uses a simple ConcurrentHashMap)
+2. Remove dependency on Spring; externalize logic of the interceptor and write a Proxy that can be used instead
