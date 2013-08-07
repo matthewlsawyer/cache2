@@ -254,10 +254,15 @@ public class Cache2Intercepter {
 
 				if (keys != null) {
 					for (Cache1Key key : keys) {
+
 						// remove the cache1
 						cache1Helper.remove(key);
+
+						// remove the link
+						cache2Helper.remove(cache2Key, key);
 					}
 				}
+
 			}
 
 		};
