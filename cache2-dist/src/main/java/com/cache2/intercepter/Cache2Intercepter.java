@@ -252,9 +252,11 @@ public class Cache2Intercepter {
 				// get cache1 keys from cache2
 				Set<Cache1Key> keys = cache2Helper.get(cache2Key);
 
-				for (Cache1Key key : keys) {
-					// remove the cache1
-					cache1Helper.remove(key);
+				if (keys != null) {
+					for (Cache1Key key : keys) {
+						// remove the cache1
+						cache1Helper.remove(key);
+					}
 				}
 			}
 
