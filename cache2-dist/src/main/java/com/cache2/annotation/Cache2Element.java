@@ -9,14 +9,15 @@ import java.lang.annotation.Target;
 import com.cache2.domain.Identifiable;
 
 /**
- * Annotation that declares a type, field, or method parameter to be
- * handled by cache2.
+ * Annotation that declares a type, field, or method parameter to be handled by
+ * cache2.
  * 
  * @author matthew
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER })
+@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER,
+		ElementType.METHOD })
 @Inherited
 public @interface Cache2Element {
 

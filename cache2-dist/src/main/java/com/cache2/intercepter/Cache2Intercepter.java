@@ -31,17 +31,17 @@ import com.cache2.util.CacheUtil;
  * 
  * <p>
  * Primary cache (cache1):<br>
- * () => O
+ * ( ) => O
  * </p>
  * 
  * <p>
  * Secondary cache (cache2):<br>
- * E => ()
+ * E => ( )
  * </p>
  * 
  * <p>
  * Key:<br>
- * () denotes a method signature<br>
+ * ( ) denotes a method signature<br>
  * O denotes an object<br>
  * E denotes an element signature (class and id)
  * </p>
@@ -67,7 +67,7 @@ import com.cache2.util.CacheUtil;
  * cache. Basically the child elements need to invalidate methods linked to the
  * parent element. This is handled by invalidations on the child element update
  * or delete, as they normally contain a field of the parent element or its id.
- * As long as that field in annotated, it will find the method to invalidate.
+ * As long as that field is annotated, it will find the method to invalidate.
  * <li>
  * </ol>
  * </p>
@@ -191,8 +191,10 @@ public class Cache2Intercepter {
 			}
 
 		}
-		// if the return type is a normal cache2 element
-		else if (returnType.isAnnotationPresent(Cache2Element.class)) {
+		// if the return type is a normal cache2 element or the method is
+		// annotated
+		else if (returnType.isAnnotationPresent(Cache2Element.class)
+				|| method.isAnnotationPresent(Cache2Element.class)) {
 
 			// check the cache
 			CachedValue<Identifiable> cachedValue = (CachedValue<Identifiable>) cache1Helper
@@ -293,7 +295,9 @@ public class Cache2Intercepter {
 
 				Cache2Element cache2Element = null;
 
-				if (args[i] != null) {
+				final Object arg = args[i];
+
+				if (arg != null) {
 
 					for (Annotation annotation : annotations[i]) {
 						if (annotation instanceof Cache2Element) {
@@ -307,23 +311,21 @@ public class Cache2Intercepter {
 					}
 
 					// if its a list
-					if (List.class.isAssignableFrom(args[i].getClass())) {
-						this.handleFields((List<Identifiable>) args[i],
-								cache1Key, command);
+					if (List.class.isAssignableFrom(arg.getClass())) {
+						this.handleFields((List<Identifiable>) arg, cache1Key,
+								command);
 					}
 					// if its an integer
-					else if (int.class.isAssignableFrom(args[i].getClass())
-							|| Integer.class.isAssignableFrom(args[i]
-									.getClass())) {
+					else if (int.class.isAssignableFrom(arg.getClass())
+							|| Integer.class.isAssignableFrom(arg.getClass())) {
 
 						command.execute(CacheUtil.createCache2Key(
-								cache2Element.value(), (int) args[i]),
-								cache1Key);
+								cache2Element.value(), (int) arg), cache1Key);
 					}
 					// if its a normal element
-					else if (Identifiable.class.isAssignableFrom(args[i]
-							.getClass())) {
-						this.handleFields((Identifiable) args[i], cache1Key,
+					else if (Identifiable.class
+							.isAssignableFrom(arg.getClass())) {
+						this.handleFields((Identifiable) arg, cache1Key,
 								command);
 					}
 				}
