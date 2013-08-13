@@ -1,7 +1,5 @@
 package com.cache2.domain;
 
-import com.cache2.domain.Identifiable;
-
 public class TestEntity implements Identifiable {
 
 	/**
