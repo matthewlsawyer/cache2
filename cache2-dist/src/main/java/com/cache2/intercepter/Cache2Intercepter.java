@@ -182,12 +182,8 @@ public class Cache2Intercepter {
 				// cache the value
 				cache1Helper.put(cache1Key, cachedValue);
 
-				// create links in cache2 for return value
+				// create links in cache2
 				this.handleFields(cachedValue.getValue(), cache1Key, create);
-
-				// create links in cache2 for arguments
-				this.handleArguments(pjp.getArgs(),
-						method.getParameterAnnotations(), cache1Key, create);
 			}
 
 		}
@@ -216,10 +212,6 @@ public class Cache2Intercepter {
 
 				// create links in cache2
 				this.handleFields(cachedValue.getValue(), cache1Key, create);
-
-				// create links in cache2 for arguments
-				this.handleArguments(pjp.getArgs(),
-						method.getParameterAnnotations(), cache1Key, create);
 			}
 		}
 		// if the return type is not an entity
