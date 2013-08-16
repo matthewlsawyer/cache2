@@ -52,7 +52,7 @@ private List<Entity2> entity2List;
 // ..
 ```
 
-This gives the framework the information it needs to invalidate cached methods that return an instance of Entity that has a field of Entity2 with a particular ID (e.g. 1) when an instance of Entity2 with an ID of 1 is updated.
+This gives the framework the information it needs to invalidate cached methods based on their fields. For example, if a method returns an instance of Entity that has a field of Entity2 with a particular ID of 1; when an instance of Entity2 with an ID of 1 is updated, that cached method will be invalidated.
 
 Method metadata
 ------
