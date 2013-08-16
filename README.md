@@ -85,38 +85,6 @@ And that's it! Now you have a declarative cache layer that handles invalidations
 Advanced
 ======
 
-Additional ways to link
-------
-
-The cache2 framework also supports invalidating a method cache when changes to its arguments occur. If your argument is an entity (or integer or list with class provided), you can annotate it and, when it gets updated, the method cache will be invalidated.
-
-In this way, we provide an additional way to link entities to methods, on top of providing annotations on the classes themselves. An example is below.
-
-```java
-// entity1 class definition
-@Cache2Element
-public class Entity implements Identifiable {
-  private String name;
-  // ..
-}
-
-// entity2 class definition
-@Cache2Element
-public class Entity2 implements Identifiable {
-  private String name;
-  // ..
-}
-
-// the method to be cached
-@CachedMethod(value = CacheStrategy.GET)
-public List<Entity2> findMatchByEntity(
-  @Cache2Element Entity entity) {
-  // find entity2 objects where the name is equal to entity name
-}
-```
-
-Now, when the Entity which you used to search is updated, this method is invalidated.
-
 Handling type parameters
 ------
 
