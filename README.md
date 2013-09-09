@@ -1,10 +1,13 @@
-What is it?
+Overview
 ======
+
+What is it?
+------
 
 Cache2 is a declarative cache framework that aims to provide intelligent invalidation.
 
 Wait, how can invalidation be intelligent?
-======
+------
 
 The whole point of this framework is to solve the problem of cache invalidation. Or rather, the difficulty of cache invalidation. Cache2's solution involves providing your classes with metadata that, upon an update made to an instance of that class, informs the framework which cached methods should be invalidated. The metadata is provided declaratively, via annotations.
 
@@ -23,6 +26,7 @@ To enable cache2, first add this to your spring config:
 ```xml
 <context:annotation-config />
 <context:component-scan base-package="com.cache2" />
+<aop:aspectj-autoproxy />
 ```
 
 Class metadata
