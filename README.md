@@ -107,5 +107,4 @@ Now when this method is invoked by a concrete class, the return type will be cac
 TODO
 ======
 
-1. Allow other cache implementations to be used (right now it uses a ConcurrentHashMap)
-2. Remove dependency on Spring; externalize logic of the interceptor and write a Proxy that can be used instead
+Remove dependency on Spring; externalize logic of the interceptor and write a Proxy that can be used instead
