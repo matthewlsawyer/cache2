@@ -36,7 +36,7 @@ public class Cache2Helper extends CacheHelper<Cache2Key, Set<Cache1Key>> {
 
 			cache1Keys.add(value);
 
-			this.getCache().put(key, cache1Keys);
+			this.put(key, cache1Keys);
 		}
 
 		return value;
@@ -58,6 +58,8 @@ public class Cache2Helper extends CacheHelper<Cache2Key, Set<Cache1Key>> {
 			Set<Cache1Key> cache1Keys = this.get(key);
 
 			removed = cache1Keys.remove(value);
+
+			this.put(key, cache1Keys);
 		}
 
 		return removed ? value : null;

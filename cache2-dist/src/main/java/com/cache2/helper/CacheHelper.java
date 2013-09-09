@@ -2,18 +2,31 @@ package com.cache2.helper;
 
 import java.util.concurrent.ConcurrentMap;
 
-import com.cache2.util.CacheUtil;
+import com.cache2.manager.CacheManager;
+import com.cache2.manager.SimpleCacheManager;
 
 public abstract class CacheHelper<K, V> {
 
 	private ConcurrentMap<K, V> cache;
 
+	private CacheManager<?> cacheManager;
+
+	public CacheHelper() {
+		super();
+		this.cacheManager = SimpleCacheManager.getInstance();
+	}
+
+	public CacheHelper(CacheManager<?> cacheManager) {
+		super();
+		this.cacheManager = cacheManager;
+	}
+
 	@SuppressWarnings("unchecked")
-	public synchronized ConcurrentMap<K, V> getCache() {
+	public ConcurrentMap<K, V> getCache() {
 
 		// lazy load cache
 		if (this.cache == null) {
-			this.cache = (ConcurrentMap<K, V>) CacheUtil.getCache(this
+			this.cache = (ConcurrentMap<K, V>) cacheManager.getCache(this
 					.getCacheName());
 		}
 

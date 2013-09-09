@@ -23,7 +23,7 @@ public @interface CachedMethod {
 
 	/**
 	 * The class of the return type of the method. Only required to support
-	 * lists and primitive integers.
+	 * lists.
 	 * 
 	 * @return class
 	 */

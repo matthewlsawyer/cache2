@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cache2.domain.CachedValue;
-import com.cache2.domain.TestEntity;
+import com.cache2.domain.Entity;
 import com.cache2.key.Cache1Key;
 import com.cache2.key.Cache2Key;
 import com.cache2.util.CacheUtil;
@@ -31,7 +31,7 @@ public class TestCache2Helper {
 
 		cache1Helper.put(cache1Key, new CachedValue<Void>(null));
 
-		final TestEntity entity = new TestEntity();
+		final Entity entity = new Entity();
 		entity.setId(1);
 
 		final Cache2Key cache2Key = CacheUtil.createCache2Key(

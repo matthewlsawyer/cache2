@@ -3,58 +3,12 @@ package com.cache2.util;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import com.cache2.domain.Identifiable;
 import com.cache2.key.Cache1Key;
 import com.cache2.key.Cache2Key;
 
 public class CacheUtil {
-
-	/**
-	 * TODO Support a different map implementation.
-	 */
-	private static ConcurrentMap<Object, ConcurrentMap<Object, Object>> CACHE_MAP = new ConcurrentHashMap<>();
-
-	/**
-	 * Get a cache from the map. If the cache is not found, it will create a new
-	 * one and put it in the map.
-	 * 
-	 * @param name
-	 * @return cache
-	 */
-	public static Map<Object, Object> getCache(String name) {
-
-		ConcurrentMap<Object, Object> cache = CacheUtil.CACHE_MAP.get(name);
-
-		if (cache == null) {
-			cache = new ConcurrentHashMap<>();
-			CacheUtil.putCache(name, cache);
-		}
-
-		return cache;
-	}
-
-	/**
-	 * Put a cache into the map.
-	 * 
-	 * @param cache
-	 */
-	public static Map<Object, Object> putCache(String name,
-			ConcurrentMap<Object, Object> cache) {
-		return CacheUtil.CACHE_MAP.put(name, cache);
-	}
-
-	/**
-	 * Remove a cache from the map.
-	 * 
-	 * @param name
-	 */
-	public static void removeCache(String name) {
-		CacheUtil.CACHE_MAP.remove(name);
-	}
 
 	/**
 	 * Create the cache1 key.

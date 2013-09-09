@@ -85,38 +85,63 @@ public class Cache2Intercepter {
 	@Autowired
 	private Cache2Helper cache2Helper;
 
-	@Around("execution(* *(..)) && @annotation(com.cache2.annotation.CachedMethod)")
-	public Object around(ProceedingJoinPoint pjp) throws Throwable {
+	/**
+	 * Command for putting elements into the cache.
+	 */
+	private final CacheCommand putCommand = new CacheCommand() {
 
-		Object retVal = null;
+		@Override
+		public void execute(Cache2Key cache2Key, Cache1Key cache1Key) {
+			cache2Helper.put(cache2Key, cache1Key);
+		}
 
-		final Method method = ((MethodSignature) pjp.getSignature())
-				.getMethod();
+	};
 
-		final CachedMethod annotation = method
-				.getAnnotation(CachedMethod.class);
+	/**
+	 * Command for invalidating elements from the cache.
+	 */
+	private final CacheCommand invalidateCommand = new CacheCommand() {
 
-		if (annotation != null) {
+		@Override
+		public void execute(Cache2Key cache2Key, Cache1Key cache1Key) {
 
-			switch (annotation.value()) {
-			case GET:
-				retVal = this.get(pjp);
-				break;
-			case INSERT:
-			case UPDATE:
-			case DELETE:
-			case INVALIDATE:
-				retVal = this.invalidate(pjp);
-				break;
-			default:
-				retVal = pjp.proceed();
-				break;
+			// get cache1 keys from cache2
+			Set<Cache1Key> keys = cache2Helper.get(cache2Key);
+
+			if (keys != null) {
+				for (Cache1Key key : keys) {
+
+					// remove the cache1
+					cache1Helper.remove(key);
+
+					// remove the link
+					cache2Helper.remove(cache2Key, key);
+				}
 			}
 
 		}
-		// not marked with annotation
-		else {
+
+	};
+
+	@Around("@annotation(cachedMethod)")
+	public Object around(ProceedingJoinPoint pjp, CachedMethod cachedMethod)
+			throws Throwable {
+
+		Object retVal = null;
+
+		switch (cachedMethod.value()) {
+		case GET:
+			retVal = this.get(pjp, cachedMethod);
+			break;
+		case INSERT:
+		case UPDATE:
+		case DELETE:
+		case INVALIDATE:
+			retVal = this.invalidate(pjp);
+			break;
+		default:
 			retVal = pjp.proceed();
+			break;
 		}
 
 		return retVal;
@@ -131,15 +156,13 @@ public class Cache2Intercepter {
 	 * @throws Throwable
 	 */
 	@SuppressWarnings("unchecked")
-	protected Object get(ProceedingJoinPoint pjp) throws Throwable {
+	protected Object get(ProceedingJoinPoint pjp, CachedMethod annotation)
+			throws Throwable {
 
 		Object retVal = null;
 
 		final Method method = ((MethodSignature) pjp.getSignature())
 				.getMethod();
-
-		final CachedMethod annotation = method
-				.getAnnotation(CachedMethod.class);
 
 		// the declaring class
 		final Class<?> declaringClass = pjp.getTarget().getClass();
@@ -151,19 +174,9 @@ public class Cache2Intercepter {
 		// return type of method
 		final Class<?> returnType = method.getReturnType();
 
-		final CacheCommand create = new CacheCommand() {
-
-			@Override
-			public void execute(Cache2Key cache2Key, Cache1Key cache1Key) {
-				cache2Helper.put(cache2Key, cache1Key);
-			}
-
-		};
-
-		// if the return type is a list of cache2 elements
+		// if the return type is a list
 		if (List.class.isAssignableFrom(returnType)
-				&& annotation.clazz() != null
-				&& annotation.clazz().isAnnotationPresent(Cache2Element.class)) {
+				&& annotation.clazz().isAnnotationPresent(CachedMethod.class)) {
 
 			CachedValue<List<Identifiable>> cachedValue = (CachedValue<List<Identifiable>>) cache1Helper
 					.get(cache1Key);
@@ -183,7 +196,8 @@ public class Cache2Intercepter {
 				cache1Helper.put(cache1Key, cachedValue);
 
 				// create links in cache2
-				this.handleFields(cachedValue.getValue(), cache1Key, create);
+				this.handleFields(cachedValue.getValue(), cache1Key,
+						this.putCommand);
 			}
 
 		}
@@ -211,7 +225,8 @@ public class Cache2Intercepter {
 				cache1Helper.put(cache1Key, cachedValue);
 
 				// create links in cache2
-				this.handleFields(cachedValue.getValue(), cache1Key, create);
+				this.handleFields(cachedValue.getValue(), cache1Key,
+						this.putCommand);
 			}
 		}
 		// if the return type is not an entity
@@ -238,32 +253,9 @@ public class Cache2Intercepter {
 
 		final Object retVal = pjp.proceed();
 
-		final CacheCommand invalidate = new CacheCommand() {
-
-			@Override
-			public void execute(Cache2Key cache2Key, Cache1Key cache1Key) {
-
-				// get cache1 keys from cache2
-				Set<Cache1Key> keys = cache2Helper.get(cache2Key);
-
-				if (keys != null) {
-					for (Cache1Key key : keys) {
-
-						// remove the cache1
-						cache1Helper.remove(key);
-
-						// remove the link
-						cache2Helper.remove(cache2Key, key);
-					}
-				}
-
-			}
-
-		};
-
 		// handle the arguments with the command
 		this.handleArguments(pjp.getArgs(), method.getParameterAnnotations(),
-				null, invalidate);
+				null, this.invalidateCommand);
 
 		return retVal;
 	}
@@ -291,10 +283,17 @@ public class Cache2Intercepter {
 
 				if (arg != null) {
 
-					for (Annotation annotation : annotations[i]) {
-						if (annotation instanceof Cache2Element) {
-							cache2Element = (Cache2Element) annotation;
-							break;
+					// first see if the argument is an annotated class
+					cache2Element = arg.getClass().getAnnotation(
+							Cache2Element.class);
+
+					// if its not, check if it is an annotated argument
+					if (cache2Element == null) {
+						for (Annotation annotation : annotations[i]) {
+							if (annotation instanceof Cache2Element) {
+								cache2Element = (Cache2Element) annotation;
+								break;
+							}
 						}
 					}
 
