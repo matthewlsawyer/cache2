@@ -176,7 +176,7 @@ public class Cache2Intercepter {
 
 		// if the return type is a list
 		if (List.class.isAssignableFrom(returnType)
-				&& annotation.clazz().isAnnotationPresent(CachedMethod.class)) {
+				&& annotation.clazz().isAnnotationPresent(Cache2Element.class)) {
 
 			CachedValue<List<Identifiable>> cachedValue = (CachedValue<List<Identifiable>>) cache1Helper
 					.get(cache1Key);
