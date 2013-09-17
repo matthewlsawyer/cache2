@@ -9,11 +9,87 @@ Cache2 is a declarative cache framework that aims to provide intelligent invalid
 Wait, how can invalidation be intelligent?
 ------
 
-The whole point of this framework is to solve the problem of cache invalidation. Or rather, the difficulty of cache invalidation. Cache2's solution involves providing your classes with metadata that, upon an update made to an instance of that class, informs the framework which cached methods should be invalidated. The metadata is provided declaratively, via annotations.
+The whole point of this framework is to solve the problem of cache invalidation. Or rather, the difficulty of cache invalidation. Our solution involves adding metadata, in the form of annotations, to your classes which inform the application how instances of those classes should interact with the cache.
 
-The intelligent part is that updating an entity, lets say an instance of class Entity2 can lead to an invalidation of a cached method that returns an intance of class Entity if it has a declared field of type Entity2.
+Normally when dealing with cached objects the biggest concern is stale data, and how and when to invalidate it. With cache2, you don't need to worry about invalidation because it handles it automagically.
 
-Cache2 does this by maintaining two caches. The primary cache, or cache1, caches methods that return annotated entities. The secondary cache, or cache2, maintains links between entities and cache1 entries. A link is created for each of the returned entity's fields if they are also annotated. Effectively, a network of relationships is created every time a method is cached. And an update to any node of the network will invalidate that cached method.
+How it's done
+------
+
+The framework maintains a primary cache (cache1), which holds method signatures as keys and the results of those method calls as values and a secondary cache (cache2), which maintains references between objects and cache1 entries.
+
+The metadata you set up on a class for this framework is represented by the ```@Cache2Element``` annotation. This annotation tells the framework whether an instance of the annotated class should be put into cache1 when it is returned from a method. 
+
+
+When an instance of your class gets put into cache1, a reference between the instance (by class name and id) and the cache1 entry is put into cache2. Also, if the class has annotated fields, a reference between each of the fields (again, by class name and id) and the cache1 entry is put into cache2. This happens recursively through the fields; the framework inspects the class of that field for other annotated fields, and creates a reference for each of those. Basically, a network of references gets created each time a method gets cached.
+
+Example (pseudocode):
+
+```
+// book class with metadata
+@Cache2Element
+class Book {
+  private int id;
+
+  private int pages;
+  
+  // annotated field
+  @Cache2Element
+  private Shelf shelf;
+}
+
+// shelf class with metadata
+@Cache2Element
+class Shelf {
+  private int id;
+  private int row;
+}
+
+// method
+@CachedMethod(CacheStrategy.GET)
+public Book findBookById(int id) {
+  // hit db and return book...
+}
+```
+
+When the ```findBookById(int id)``` method is called, an instance of ```Book``` is cached into cache1. A reference between the ```Book``` instance (by class name and id) is also put into cache2. A reference between the ```Shelf``` instance and the cache1 entry is put into cache2 as well.
+
+So you are left with this:
+
+<cache1>
+key | value
+------------
+M   | O
+
+<cache2>
+key       | value
+-----------------
+Book,  id | M
+Shelf, id | M
+
+M = method signature
+O = serialized object
+
+Now, let's say an update happens on the ```Shelf``` instance.
+
+```
+@CachedMethod(CacheStrategy.UPDATE)
+public void update(Shelf shelf) {
+  // update the row and insert to db...
+}
+```
+
+The framework knows that any cached objects that have this particular instance of the ```Shelf``` as a field is now stale, and must be invalidated. Since cache2 contains a reference between our ```Shelf``` instance and the method signature that is the key to cache1, we can invalidate it.
+
+```
+// build the cache2Key from class name and id...
+
+// get the cache1Key
+Cache1Key cache1Key = cache2.get(cache2Key);
+
+// invalidate
+cache1.remove(cache1Key);
+```
 
 Usage
 ======
