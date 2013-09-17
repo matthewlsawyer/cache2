@@ -54,21 +54,27 @@ public Book findBookById(int id) {
 
 When the ```findBookById(int id)``` method is called, an instance of ```Book``` is cached into cache1. A reference between the ```Book``` instance (by class name and id) is also put into cache2. A reference between the ```Shelf``` instance and the cache1 entry is put into cache2 as well.
 
-So you are left with this:
+So you are left with this in cache1:
 
-<cache1>
+```
 key | value
 ------------
 M   | O
 
-<cache2>
+M = method signature
+O = serialized object
+```
+
+And this in cache2:
+
+```
 key       | value
 -----------------
 Book,  id | M
 Shelf, id | M
 
 M = method signature
-O = serialized object
+```
 
 Now, let's say an update happens on the ```Shelf``` instance.
 
@@ -79,7 +85,7 @@ public void update(Shelf shelf) {
 }
 ```
 
-The framework knows that any cached objects that have this particular instance of the ```Shelf``` as a field is now stale, and must be invalidated. Since cache2 contains a reference between our ```Shelf``` instance and the method signature that is the key to cache1, we can invalidate it.
+The framework knows that any cached objects that have this particular ```Shelf``` as a field is now stale, and must be invalidated. Since cache2 contains a reference between our ```Shelf``` instance and the method signature that is the key to the entry containing the ```Book``` object, we can invalidate it.
 
 ```
 // build the cache2Key from class name and id...
