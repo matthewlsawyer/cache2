@@ -10,6 +10,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -161,11 +162,12 @@ public class Cache2Intercepter {
 
 		Object retVal = null;
 
-		final Method method = ((MethodSignature) pjp.getSignature())
-				.getMethod();
-
 		// the declaring class
 		final Class<?> declaringClass = pjp.getTarget().getClass();
+
+		final Method method = AopUtils.getMostSpecificMethod(
+				((MethodSignature) pjp.getSignature()).getMethod(),
+				declaringClass);
 
 		// cache 1 key
 		final Cache1Key cache1Key = CacheUtil.createCache1Key(declaringClass,
@@ -248,8 +250,12 @@ public class Cache2Intercepter {
 	 */
 	protected Object invalidate(ProceedingJoinPoint pjp) throws Throwable {
 
-		final Method method = ((MethodSignature) pjp.getSignature())
-				.getMethod();
+		// the declaring class
+		final Class<?> declaringClass = pjp.getTarget().getClass();
+
+		final Method method = AopUtils.getMostSpecificMethod(
+				((MethodSignature) pjp.getSignature()).getMethod(),
+				declaringClass);
 
 		final Object retVal = pjp.proceed();
 
