@@ -18,10 +18,9 @@ How it's done
 
 The framework maintains a primary cache (cache1), which holds method signatures as keys and the results of those method calls as values and a secondary cache (cache2), which maintains references between objects and cache1 entries.
 
-The metadata you set up on a class for this framework is represented by the ```@Cache2Element``` annotation. This annotation tells the framework whether an instance of the annotated class should be put into cache1 when it is returned from a method. 
+The ```@Cache2Element``` annotation tells the framework whether an instance of the annotated class should be put into cache1 when it is returned from a method. 
 
-
-When an instance of your class gets put into cache1, a reference between the instance (by class name and id) and the cache1 entry is put into cache2. Also, if the class has annotated fields, a reference between each of the fields (again, by class name and id) and the cache1 entry is put into cache2. This happens recursively through the fields; the framework inspects the class of that field for other annotated fields, and creates a reference for each of those. Basically, a network of references gets created each time a method gets cached.
+When an instance of your class gets put into cache1, a reference between the instance (by class name and id) and the cache1 entry is put into cache2. Also, if the class has annotated fields, a reference between each of its fields (again, by class name and id) and the cache1 entry is put into cache2. This happens recursively through the fields; the framework inspects the class of that field for other annotated fields, and creates a reference for each of those. Basically, a network of references gets created each time a method gets cached.
 
 Example (pseudocode):
 
