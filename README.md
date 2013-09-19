@@ -170,10 +170,10 @@ And that's it! Now you have a declarative cache layer that handles invalidations
 Advanced
 ======
 
-Handling type parameters
+Handling generics
 ------
 
-Normally when caching a method, the framework checks the return type's class to see if it is a cacheable element, but if your return type is a type parameter, you need to handle it explicitly. To get around type erasure, you must annotate your method with the @Cache2Element annotation to inform the framework that the returned object should be cached. An example of this case is below.
+Normally when caching a method, the framework checks the return type's class to see if it is a cacheable element, but if your return type is a generic, you need to handle it explicitly. You should annotate your method with the ```@Cache2Element``` annotation to inform the framework that the returned object should be cached. An example of this case is below.
 
 ```java
 @CachedMethod(value = CacheStrategy.GET)
