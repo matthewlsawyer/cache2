@@ -403,7 +403,7 @@ public class Cache2Intercepter {
 						// if its a normal element
 						else if (Identifiable.class.isAssignableFrom(field
 								.getType())) {
-							this.handleFields((Identifiable) field.get(field),
+							this.handleFields((Identifiable) field.get(element),
 									cache1Key, command);
 						}
 					}
