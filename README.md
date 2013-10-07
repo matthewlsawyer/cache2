@@ -11,7 +11,7 @@ Wait, how can invalidation be intelligent?
 
 The whole point of this framework is to solve the problem of cache invalidation. Or rather, the difficulty of cache invalidation. Our solution involves adding metadata, in the form of annotations, to your classes which inform the application how instances of those classes should interact with the cache.
 
-Normally when dealing with cached objects the biggest concern is stale data, and how and when to invalidate it. With cache2, you don't need to worry about invalidation because it handles it automagically.
+Normally when dealing with cached objects the biggest concern is stale data, and how and when to invalidate it. With cache2, you don't need to worry about invalidation because the framework handles it for you.
 
 How it's done
 ------
