@@ -9,7 +9,7 @@ Cache2 is a declarative cache framework that aims to provide intelligent invalid
 Wait, how can invalidation be intelligent?
 ------
 
-The whole point of this framework is to solve the problem of cache invalidation. Or rather, the difficulty of cache invalidation. Our solution involves adding metadata, in the form of annotations, to your classes which inform the application how instances of those classes should interact with the cache.
+The whole point of this framework is to solve the problem of cache invalidation. Or rather, the difficulty of cache invalidation. Our solution involves adding metadata, in the form of annotations, to your classes which inform the framework how instances of those classes should interact with the cache.
 
 Normally when dealing with cached objects the biggest concern is stale data, and how and when to invalidate it. With cache2, you don't need to worry about invalidation because the framework handles it for you.
 
@@ -165,10 +165,7 @@ public void insert(Entity entity) {
 }
 ```
 
-And that's it! Now you have a declarative cache layer that handles invalidations.
-
-Advanced
-======
+And that's it! Now you have a declarative cache layer that handles invalidations. One more thing though...
 
 Handling generics
 ------
