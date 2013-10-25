@@ -24,7 +24,7 @@ When an instance of your class gets put into cache1, a reference between the ins
 
 Example (pseudocode):
 
-```
+```java
 // book class with metadata
 @Cache2Element
 class Book {
@@ -77,7 +77,7 @@ M = method signature
 
 Now, let's say an update happens on the ```Shelf``` instance.
 
-```
+```java
 @CachedMethod(CacheStrategy.UPDATE)
 public void update(Shelf shelf) {
   // update the row and insert to db...
@@ -86,7 +86,7 @@ public void update(Shelf shelf) {
 
 The framework knows that any cached objects that have this particular ```Shelf``` as a field is now stale, and must be invalidated. Since cache2 contains a reference between our ```Shelf``` instance and the method signature that is the key to the entry containing the ```Book``` object, we can invalidate it.
 
-```
+```java
 // build the cache2Key from class name and id...
 
 // get the cache1Key
