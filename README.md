@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/matthewlsawyer/cache2.png?branch=master)](https://travis-ci.org/matthewlsawyer/cache2)
 Overview
 ======
 
