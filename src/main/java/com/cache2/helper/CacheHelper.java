@@ -1,13 +1,23 @@
 package com.cache2.helper;
 
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
 
 import com.cache2.manager.CacheManager;
 import com.cache2.manager.SimpleCacheManager;
 
+/**
+ * Class that abstracts the underlying cache implementation and exposes our API.
+ * 
+ * @author matthewlsawyer
+ * 
+ * @param <K>
+ *            the key of the underlying map
+ * @param <V>
+ *            the value of the underlying map
+ */
 public abstract class CacheHelper<K, V> {
 
-	private ConcurrentMap<K, V> cache;
+	private Map<K, V> cache;
 
 	private CacheManager<?> cacheManager;
 
@@ -22,12 +32,11 @@ public abstract class CacheHelper<K, V> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public ConcurrentMap<K, V> getCache() {
+	public Map<K, V> getCache() {
 
 		// lazy load cache
 		if (this.cache == null) {
-			this.cache = (ConcurrentMap<K, V>) cacheManager.getCache(this
-					.getCacheName());
+			this.cache = (Map<K, V>) cacheManager.getCache(this.getCacheName());
 		}
 
 		return this.cache;

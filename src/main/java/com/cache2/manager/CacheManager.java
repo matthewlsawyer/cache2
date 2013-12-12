@@ -1,6 +1,8 @@
 package com.cache2.manager;
 
-public interface CacheManager<C> {
+import java.util.Map;
+
+public interface CacheManager<C extends Map<?, ?>> {
 
 	/**
 	 * Get a cache from the map. If the cache is not found, it will create a new

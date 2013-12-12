@@ -1,13 +1,19 @@
 package com.cache2.manager;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-public class SimpleCacheManager implements CacheManager<ConcurrentMap<?, ?>> {
+/**
+ * TODO handle keeping this map small so you don't blow out the JVM, add
+ * eviction policy
+ * 
+ * @author matthewlsawyer
+ */
+public class SimpleCacheManager implements CacheManager<Map<?, ?>> {
 
 	private static SimpleCacheManager INSTANCE = null;
 
-	private ConcurrentMap<Object, ConcurrentMap<?, ?>> caches = new ConcurrentHashMap<>();
+	private Map<Object, Map<?, ?>> caches = new ConcurrentHashMap<>();
 
 	private SimpleCacheManager() {
 		super();
@@ -29,9 +35,9 @@ public class SimpleCacheManager implements CacheManager<ConcurrentMap<?, ?>> {
 		return instance;
 	}
 
-	public ConcurrentMap<?, ?> getCache(String name) {
+	public Map<?, ?> getCache(String name) {
 
-		ConcurrentMap<?, ?> cache = caches.get(name);
+		Map<?, ?> cache = caches.get(name);
 
 		if (cache == null) {
 			cache = new ConcurrentHashMap<>();
@@ -41,7 +47,7 @@ public class SimpleCacheManager implements CacheManager<ConcurrentMap<?, ?>> {
 		return cache;
 	}
 
-	public ConcurrentMap<?, ?> putCache(String name, ConcurrentMap<?, ?> cache) {
+	public Map<?, ?> putCache(String name, Map<?, ?> cache) {
 		return caches.put(name, cache);
 	}
 
